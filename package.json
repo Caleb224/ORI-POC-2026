@@ -1,0 +1,26 @@
+{
+  "name": "effect-playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017",
+  "devDependencies": {
+    "@effect/language-service": "^0.77.0",
+    "@types/node": "^25.3.3",
+    "@types/pg": "^8.18.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "effect": "^3.19.19",
+    "encore.dev": "^1.56.0",
+    "pg": "^8.19.0",
+    "xstate": "^5.28.0"
+  },
+  "type": "module"
+}
