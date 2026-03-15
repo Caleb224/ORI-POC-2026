@@ -1,0 +1,51 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.7/schema.json",
+  "files": {
+    "includes": [
+      "**/*",
+      "!**/node_modules",
+      "!**/.encore",
+      "!encore.gen",
+      "!**/dist",
+      "!frontend/.tanstack",
+      "!frontend/.vinxi",
+      "!frontend/.output",
+      "!frontend/dist",
+      "!frontend/dist-ssr",
+      "!frontend/src/routeTree.gen.ts"
+    ],
+    "ignoreUnknown": true
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "recommended": true
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "formatter": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["frontend/src/routes/__root.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    }
+  ]
+}

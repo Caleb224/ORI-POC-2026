@@ -25,7 +25,7 @@ export const DatabaseLive = Layer.scoped(
         Effect.exit(
           Effect.tryPromise({
             try: async () => {
-              const result = await pool.query(sql, params as any[])
+              const result = await pool.query(sql, params as unknown[])
               return result.rows as unknown as ReadonlyArray<A>;
             },
             catch: (e: unknown) =>

@@ -4,11 +4,11 @@ import { quoteMachine } from "../machines/policy_quote_machine.ts"
 import { policyLifecycleMachine } from "../machines/policy_lifecycle_machine.ts"
 import {
   PolicyRepositoryTag,
-  PolicyRepositoryError,
+  type PolicyRepositoryError,
   type PolicyRepositoryService,
   type PolicyUpdate
 } from "../repositories/policy_repository.ts"
-import { DatabaseError } from "../services/database.ts"
+import type { DatabaseError } from "../services/database.ts"
 import { DatabaseLive } from "../layers/database_layer.ts"
 import { PolicyRepositoryLayer } from "../layers/policy_repository_layer.ts"
 import type { NewPolicy, Policy } from "../models/policy.ts"
@@ -150,7 +150,7 @@ const buildQuotePolicy = (input: {
 const transitionQuoteOrFail = (
   policy: Policy,
   event: { type: "APPROVED"; effectiveDate: string } | { type: "DECLINED" }
-) => {
+): Effect.Effect<void, PolicyWorkflowError> => {
   const snapshot = quoteMachine.resolveState({
     value: policy.status as "quoted" | "approved" | "declined",
     context: {
@@ -170,14 +170,14 @@ const transitionQuoteOrFail = (
       )
     )
   }
-  return Effect.succeed(next)
+  return Effect.succeed(undefined)
 }
 
 /** Enforces policy lifecycle transitions and surfaces workflow failures. */
 const transitionLifecycleOrFail = (
   policy: Policy,
   event: { type: "EXPIRE" }
-) => {
+): Effect.Effect<void, PolicyWorkflowError> => {
   const snapshot = policyLifecycleMachine.resolveState({
     value: policy.status === "active" ? "active" : "inactive",
     context: {
@@ -193,7 +193,7 @@ const transitionLifecycleOrFail = (
       )
     )
   }
-  return Effect.succeed(next)
+  return Effect.succeed(undefined)
 }
 
 /** Determines issued status using the policy lifecycle machine. */
@@ -344,17 +344,18 @@ export const expirePolicies = (input?: { today?: string }) =>
     const repo = yield* PolicyRepositoryTag
     const today = input?.today ?? new Date().toISOString().slice(0, 10)
     const expiring = yield* repo.listActiveEndingOnOrBefore(today)
-    const results = yield* Effect.forEach(
-      expiring,
-      (policy) =>
-        transitionLifecycleOrFail(policy, { type: "EXPIRE" }).pipe(
-          Effect.flatMap(() =>
-            repo.update(policy.id, { status: "inactive" })
+    const results: ReadonlyArray<Either.Either<Policy, PolicyLogicError>> =
+      yield* Effect.forEach(
+        expiring,
+        (policy) =>
+          transitionLifecycleOrFail(policy, { type: "EXPIRE" }).pipe(
+            Effect.flatMap(() =>
+              repo.update(policy.id, { status: "inactive" })
+            ),
+            Effect.either
           ),
-          Effect.either
-        ),
-      { concurrency: 10 }
-    )
+        { concurrency: 10 }
+      )
     const expired = results.filter(Either.isRight).length
     const failed = results.length - expired
     yield* Effect.logInfo(

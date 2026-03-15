@@ -15,7 +15,10 @@ import {
   PolicyWorkflowError,
   PolicyValidationError
 } from "../logic/policy_logic.ts"
-import { PolicyRepositoryError } from "../repositories/policy_repository.ts"
+import {
+  PolicyRepositoryError,
+  type PolicyRepositoryTag
+} from "../repositories/policy_repository.ts"
 import { DatabaseError } from "../services/database.ts"
 import type { Policy } from "../models/policy.ts"
 
@@ -42,8 +45,8 @@ const toApiError = (err: unknown) => {
 }
 
 /** Runs a policy Effect and converts errors into API errors. */
-const runApi = async <A, R>(
-  effect: Effect.Effect<A, PolicyLogicError, R>
+const runApi = async <A>(
+  effect: Effect.Effect<A, PolicyLogicError, PolicyRepositoryTag>
 ) => {
   try {
     return await runPolicyEffect(effect)

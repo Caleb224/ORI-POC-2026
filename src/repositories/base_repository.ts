@@ -74,13 +74,14 @@ export class BaseRepository<
   Entity,
   Create extends Record<string, unknown>,
   Update extends Record<string, unknown>,
+  Row extends object,
   E extends Error
 > {
   constructor(
     protected readonly db: DatabaseService,
     protected readonly table: string,
     protected readonly idColumn: string,
-    protected readonly toEntity: (row: any) => Entity,
+    protected readonly toEntity: (row: Row) => Entity,
     protected readonly createColumns: ColumnMap<Create>,
     protected readonly updateColumns: ColumnMap<Update>,
     protected readonly errors: BaseRepositoryErrors<E>
@@ -89,7 +90,7 @@ export class BaseRepository<
   /** Inserts a record and returns the mapped entity. */
   create(input: Create): Effect.Effect<Entity, DatabaseError | E> {
     const query = buildInsertQuery(this.table, input, this.createColumns)
-    return this.db.query<Entity>(query.text, query.values).pipe(
+    return this.db.query<Row>(query.text, query.values).pipe(
       Effect.flatMap((rows) =>
         rows[0]
           ? Effect.succeed(this.toEntity(rows[0]))
@@ -113,7 +114,7 @@ export class BaseRepository<
     if (!query) {
       return Effect.fail(this.errors.updateNoFields())
     }
-    return this.db.query<Entity>(query.text, query.values).pipe(
+    return this.db.query<Row>(query.text, query.values).pipe(
       Effect.flatMap((rows) =>
         rows[0]
           ? Effect.succeed(this.toEntity(rows[0]))
@@ -125,7 +126,7 @@ export class BaseRepository<
   /** Loads a record by id or returns null. */
   findById(id: Id): Effect.Effect<Entity | null, DatabaseError> {
     return this.db
-      .query<Entity>(
+      .query<Row>(
         `
         select * from ${this.table} where ${this.idColumn} = $1 limit 1
         `,
@@ -137,7 +138,7 @@ export class BaseRepository<
   /** Deletes a record by id, failing if not found. */
   delete(id: Id): Effect.Effect<void, DatabaseError | E> {
     return this.db
-      .query<Entity>(
+      .query<Row>(
         `
         delete from ${this.table} where ${this.idColumn} = $1 returning *
         `,

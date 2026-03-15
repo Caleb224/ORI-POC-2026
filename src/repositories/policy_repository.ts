@@ -1,5 +1,5 @@
 import { Context, Effect } from "effect"
-import { Database, DatabaseError, type DatabaseService } from "../services/database.ts"
+import { Database, type DatabaseError, type DatabaseService } from "../services/database.ts"
 import type { NewPolicy, Policy } from "../models/policy.ts"
 import {
   BaseRepository,
@@ -42,7 +42,7 @@ export interface PolicyRepositoryService {
 export class PolicyRepositoryTag extends Context.Tag("PolicyRepository")<
   PolicyRepositoryTag,
   PolicyRepositoryService
->() {}
+>() { }
 
 /** Patch shape for policy updates. */
 export type PolicyUpdate = Partial<
@@ -57,6 +57,19 @@ export type PolicyUpdate = Partial<
     | "issuedAt"
   >
 >
+
+/** DB rows are untyped at runtime; `unknown` keeps parsing explicit in `toEntity`. */
+type PolicyRow = {
+  id: unknown
+  policy_number: unknown
+  holder_name: unknown
+  status: unknown
+  premium_cents: unknown
+  effective_date: unknown
+  end_date: unknown
+  issued_at: unknown
+  created_at: unknown
+}
 
 const policyCreateColumns = {
   policyNumber: "policy_number",
@@ -92,6 +105,7 @@ class PolicyRepository extends BaseRepository<
   Policy,
   NewPolicy,
   PolicyUpdate,
+  PolicyRow,
   PolicyRepositoryError
 > implements PolicyRepositoryService {
   /** Normalizes date-like values to YYYY-MM-DD. */
@@ -129,7 +143,7 @@ class PolicyRepository extends BaseRepository<
       db,
       "policies",
       "id",
-      (row: any): Policy => ({
+      (row: PolicyRow): Policy => ({
         id: String(row.id),
         policyNumber: String(row.policy_number),
         holderName: String(row.holder_name),
@@ -151,7 +165,7 @@ class PolicyRepository extends BaseRepository<
     policyNumber: string
   ): Effect.Effect<Policy | null, DatabaseError> {
     return this.db
-      .query<Policy>(
+      .query<PolicyRow>(
         `
         select * from policies where policy_number = $1 limit 1
         `,
@@ -163,7 +177,7 @@ class PolicyRepository extends BaseRepository<
   /** Lists all policies ordered by creation time. */
   list(): Effect.Effect<ReadonlyArray<Policy>, DatabaseError> {
     return this.db
-      .query<Policy>(
+      .query<PolicyRow>(
         `
         select * from policies order by created_at desc
         `
@@ -176,7 +190,7 @@ class PolicyRepository extends BaseRepository<
     date: string
   ): Effect.Effect<ReadonlyArray<Policy>, DatabaseError> {
     return this.db
-      .query<Policy>(
+      .query<PolicyRow>(
         `
         select * from policies
         where status = 'active' and end_date <= $1
