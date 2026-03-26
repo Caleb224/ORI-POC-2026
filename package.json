@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "setup": "pnpm install && pnpm --dir frontend install && rm -rf .encore && encore app init",
     "test": "pnpm test:backend && pnpm --dir frontend test",
     "test:backend": "vitest run",
     "test:watch": "vitest",
@@ -27,7 +28,7 @@
   },
   "dependencies": {
     "effect": "^3.19.19",
-    "encore.dev": "^1.56.0",
+    "encore.dev": "^1.56.2",
     "pg": "^8.19.0",
     "xstate": "^5.28.0"
   },

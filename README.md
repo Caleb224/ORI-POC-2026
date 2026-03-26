@@ -80,6 +80,9 @@ and a Postgres-backed repository.
 ### Seed the database
 1. `docker exec -i effectplayground-postgres psql -U postgres -d effectplayground < sql/seed.sql`
 
+### Setup the project
+1. `npm run setup`
+
 ### Run the backend (Encore)
 1. `DATABASE_URL=postgres://postgres:postgres@localhost:5432/effectplayground encore run`
 

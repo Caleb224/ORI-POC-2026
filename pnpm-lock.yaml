@@ -12,8 +12,8 @@ importers:
         specifier: ^3.19.19
         version: 3.19.19
       encore.dev:
-        specifier: ^1.56.0
-        version: 1.56.0
+        specifier: ^1.56.2
+        version: 1.56.2
       pg:
         specifier: ^8.19.0
         version: 8.19.0
@@ -294,8 +294,8 @@ packages:
   effect@3.19.19:
     resolution: {integrity: sha512-Yc8U/SVXo2dHnaP7zNBlAo83h/nzSJpi7vph6Hzyl4ulgMBIgPmz3UzOjb9sBgpFE00gC0iETR244sfXDNLHRg==}
 
-  encore.dev@1.56.0:
-    resolution: {integrity: sha512-+v+Xao4sii04tfC8/bYE47JsEE3lB4acwV2RNfclo2JEhV4ixjD9+MQmHxLKadUqQ/S5mYL+iF+ca8s6/VAWCQ==}
+  encore.dev@1.56.2:
+    resolution: {integrity: sha512-+w6tnPqCpPhlMGZyBj0vUpJbTdlqCacoQh9dVYQPEyLyOmG5rwTDpWmwS0rFo/yQ1JtBWggi7rm0dbuI1Is63w==}
     engines: {node: '>=18.0.0'}
 
   es-module-lexer@2.0.0:
@@ -818,7 +818,7 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
 
-  encore.dev@1.56.0: {}
+  encore.dev@1.56.2: {}
 
   es-module-lexer@2.0.0: {}
 
